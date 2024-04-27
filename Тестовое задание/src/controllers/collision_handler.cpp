@@ -1,18 +1,16 @@
 #include "collision_handler.h"
 
 #include <iostream>
+#include <cmath>
 
 void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 	std::shared_ptr<World> world, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data, float elapsed)
+	ArkanoidDebugData& debug_data)
 {
 	Vect demo_world_size = world.get()->get_world_size();
 
 	Ball* ball_p = ball.get();
 	float radius = ball_p->get_radius();
-
-	ball_p->set_position(Vect(ball_p->get_position() + ball_p->get_velocity() * elapsed));
-
 
 	if (ball_p->get_position().x < radius)
 	{
@@ -58,14 +56,75 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 void CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data, float elapsed)
+	ArkanoidDebugData& debug_data)
 {
 }
 
 void CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 	std::shared_ptr<Carriage> carriage, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data, float elapsed)
+	ArkanoidDebugData& debug_data)
 {
+	Vect ball_pos = ball.get()->get_position();
+	float radius = ball.get()->get_radius();
+
+	Carriage* carriage_p = carriage.get();
+
+	float closest_x = std::max(carriage_p->get_position().x, std::min(ball_pos.x, carriage_p->get_position().x + carriage_p->get_width()));
+	float closest_y = std::max(carriage_p->get_position().y, std::min(ball_pos.y, carriage_p->get_position().y + carriage_p->get_height()));
+
+	Vect to_closest = Vect(closest_x - ball_pos.x, closest_y - ball_pos.y);
+
+	float lengthSquared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
+
+	if (lengthSquared <= radius * radius) {
+
+		float length = sqrt(lengthSquared);
+		to_closest.x /= length;
+		to_closest.y /= length;
+
+		// Находим точку контакта
+		Vect contactPoint = Vect(ball_pos.x + radius * to_closest.x, ball_pos.y + radius * to_closest.y);
+
+		Vect normal;
+		if (to_closest.x > 0) {
+			if (to_closest.y > 0) {
+				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
+					normal = { 1, 0 };
+				}
+				else {
+					normal = { 0, 1 };
+				}
+			}
+			else {
+				if ((closest_x - ball_pos.x) > (ball_pos.y - closest_y)) {
+					normal = { 1, 0 };
+				}
+				else {
+					normal = { 0, -1 };
+				}
+			}
+		}
+		else {
+			if (to_closest.y > 0) {
+				if ((ball_pos.x - closest_x) > (closest_y - ball_pos.y)) {
+					normal = { -1, 0 };
+				}
+				else {
+					normal = { 0, 1 };
+				}
+			}
+			else {
+				if ((ball_pos.x - closest_x) > (ball_pos.y - closest_y)) {
+					normal = { -1, 0 };
+				}
+				else {
+					normal = { 0, -1 };
+				}
+			}
+		}
+
+		add_debug_hit(debug_data, contactPoint, normal, world_to_screen);
+	}
 }
 
 void CollisionHandler::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen)
@@ -76,3 +135,6 @@ void CollisionHandler::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& 
 	debug_data.hits.push_back(std::move(hit));
 }
 
+struct Point {
+	double x, y;
+};

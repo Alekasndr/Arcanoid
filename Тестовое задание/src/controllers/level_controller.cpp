@@ -74,6 +74,10 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 
 void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 {
+	ball->set_position(Vect(ball->get_position() + ball->get_velocity() * elapsed));
+
 	CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(),
-		debug_data, elapsed);
+		debug_data);
+	CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen(),
+		debug_data);
 }
