@@ -16,9 +16,7 @@ public:
 	void draw(ImGuiIO& io, ImDrawList& draw_list) override;
 
 private:
-	void demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elapsed);
 	void demo_draw(ImGuiIO& io, ImDrawList& draw_list);
-	void demo_add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal);
 
 	std::unique_ptr<LevelController> level_controller;
 };

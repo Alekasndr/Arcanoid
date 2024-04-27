@@ -15,6 +15,7 @@ public:
 	std::shared_ptr<World> get_world();
 	void move_carriage(ImGuiIO& io);
 	void reset(const ArkanoidSettings& settings);
+	void update(ArkanoidDebugData& debug_data, float elapsed);
 private:
 	void bricks_reset(const ArkanoidSettings& settings);
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks;

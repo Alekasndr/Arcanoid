@@ -1,5 +1,6 @@
 #include "level_controller.h"
 #include "input_controller.h"
+#include "collision_handler.h"
 
 #include <iostream>
 
@@ -69,4 +70,10 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 	}
 
 	LevelGenerator::reset_bricks_list(bricks, settings);
+}
+
+void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
+{
+	CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(),
+		debug_data, elapsed);
 }

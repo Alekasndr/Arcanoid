@@ -19,7 +19,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelGenerator::create_bric
 	return blocks;
 }
 
-void LevelGenerator::reset_bricks_list(std::shared_ptr<std::vector<std::shared_ptr<Brick>>>& briks, const ArkanoidSettings& settings)
+void LevelGenerator::reset_bricks_list(std::shared_ptr<std::vector<std::shared_ptr<Brick>>> briks, const ArkanoidSettings& settings)
 {
 	float width = (settings.world_size.x - settings.bricks_columns_padding * (settings.bricks_columns_count + 1.0f)) / settings.bricks_columns_count;
 	float height = ((settings.world_size.x / 5.0f) - settings.bricks_rows_count * (settings.bricks_rows_count + 1.0f)) / settings.bricks_rows_count;
