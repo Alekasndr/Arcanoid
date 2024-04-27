@@ -16,6 +16,7 @@ public:
 	float get_speed();
 	void set_speed(float speed);
 
+	void reset(Vect position, float radius, float speed);
 private:
 	Vect position;
 	float radius = 10.0f;

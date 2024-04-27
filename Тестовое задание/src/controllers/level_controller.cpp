@@ -34,6 +34,9 @@ void LevelController::move_carriage(ImGuiIO& io)
 
 void LevelController::reset(const ArkanoidSettings& settings)
 {
+	this->world.get()->reset(settings.world_size);
+	this->ball.get()->reset(Vect(0.0f, 0.0f), settings.ball_radius, settings.ball_speed);
+	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
 	bricks_reset(settings);
 }
 

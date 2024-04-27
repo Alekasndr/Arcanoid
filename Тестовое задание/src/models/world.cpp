@@ -24,3 +24,8 @@ void World::set_world_to_screen(Vect world_to_screen)
 {
 	this->world_to_screen = world_to_screen;
 }
+
+void World::reset(Vect size)
+{
+	this->size = size;
+}

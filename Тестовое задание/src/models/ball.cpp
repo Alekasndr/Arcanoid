@@ -37,3 +37,10 @@ void Ball::set_speed(float speed)
 	this->speed = speed;
 }
 
+void Ball::reset(Vect position, float radius, float speed)
+{
+	this->position = position;
+	this->radius = radius;
+	this->speed = speed;
+}
+

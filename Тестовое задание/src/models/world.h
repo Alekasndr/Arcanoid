@@ -13,6 +13,7 @@ public:
 	Vect get_world_to_screen();
 	void set_world_to_screen(Vect world_to_screen);
 
+	void reset(Vect size);
 private:
 	Vect size = Vect(0.0f);
 	Vect world_to_screen = Vect(0.0f);;

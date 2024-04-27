@@ -41,5 +41,11 @@ void Carriage::set_speed(float speed)
 	this->speed = speed;
 }
 
+void Carriage::reset(Vect position, float width)
+{
+	this->position = position;
+	this->width = width;
+}
+
 
 
