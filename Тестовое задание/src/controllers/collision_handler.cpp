@@ -14,6 +14,7 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 	if (ball_p->get_position().x < radius)
 	{
+		std::cout << "1" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x) * 2.0f,
 			ball_p->get_position().y));
 
@@ -24,6 +25,7 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 	else if (ball_p->get_position().x > (demo_world_size.x - radius))
 	{
+		std::cout << "2" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x -
 			(ball_p->get_position().x - (demo_world_size.x - radius)) * 2.0f,
 			ball_p->get_position().y));
@@ -35,6 +37,7 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 	if (ball_p->get_position().y < radius)
 	{
+		std::cout << "3" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x,
 			ball_p->get_position().y + (radius - ball_p->get_position().y) * 2.0f));
 
@@ -90,17 +93,21 @@ void CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 			if (to_closest.y > 0) {
 				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
 					normal = { 1, 0 };
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
-					normal = { 0, 1 };
+					normal = { 0, -1 };
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((closest_x - ball_pos.x) > (ball_pos.y - closest_y)) {
 					normal = { 1, 0 };
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
-					normal = { 0, -1 };
+					normal = { 0, 1 };
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 			}
 		}
@@ -108,17 +115,21 @@ void CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 			if (to_closest.y > 0) {
 				if ((ball_pos.x - closest_x) > (closest_y - ball_pos.y)) {
 					normal = { -1, 0 };
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 				else {
-					normal = { 0, 1 };
+					normal = { 0, -1 };
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((ball_pos.x - closest_x) > (ball_pos.y - closest_y)) {
 					normal = { -1, 0 };
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 				else {
-					normal = { 0, -1 };
+					normal = { 0, 1 };
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 			}
 		}
@@ -134,7 +145,3 @@ void CollisionHandler::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& 
 	hit.normal = normal;
 	debug_data.hits.push_back(std::move(hit));
 }
-
-struct Point {
-	double x, y;
-};
