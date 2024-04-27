@@ -72,6 +72,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Bal
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
 {
 	std::pair<Vect, Vect> resault;
+
 	for (std::shared_ptr<Brick> brick : *bricks.get())
 	{
 		Brick* temp = brick.get();
@@ -130,7 +131,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}
@@ -138,7 +139,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 			if (to_closest.y > 0) {
 				if ((ball_pos.x - closest_x) > (closest_y - ball_pos.y)) {
 					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, -1 };
@@ -148,11 +149,11 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 			else {
 				if ((ball_pos.x - closest_x) > (ball_pos.y - closest_y)) {
 					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}
