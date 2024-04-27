@@ -9,6 +9,7 @@ Brick::Brick(Vect position, float height, float width)
 	this->height = height;
 	this->width = width;
 	this->position = position;
+	this->is_active = true;
 }
 
 Vect Brick::get_position()
@@ -56,4 +57,5 @@ void Brick::reset(Vect position, float height, float width)
 	this->height = height;
 	this->width = width;
 	this->position = position;
+	this->is_active = true;
 }

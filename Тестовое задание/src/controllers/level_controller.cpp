@@ -72,7 +72,6 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 	LevelGenerator::reset_bricks_list(bricks, settings);
 }
 
-
 void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 {
 	ball->set_position(Vect(ball->get_position() + ball->get_velocity() * elapsed));
@@ -97,7 +96,6 @@ bool LevelController::check_pair(std::pair<Vect, Vect>& pair)
 	}
 	return true;
 }
-
 
 void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen)
 {
