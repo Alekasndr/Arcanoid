@@ -18,5 +18,7 @@ public:
 		Vect& world_to_screen);
 	static std::pair<Vect, Vect> collision_with_carriage(std::shared_ptr<Ball> ball, std::shared_ptr<Carriage> carriage,
 		Vect& world_to_screen);
+private:
+	static std::pair<Vect, Vect> collision_with_rect(std::shared_ptr<Ball> ball, Vect& pos, float height, float width);
 };
 

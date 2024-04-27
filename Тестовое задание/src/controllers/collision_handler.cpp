@@ -80,15 +80,19 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Bal
 std::pair<Vect, Vect> CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 	std::shared_ptr<Carriage> carriage, Vect& world_to_screen)
 {
+	return collision_with_rect(ball, carriage.get()->get_position(),
+		carriage.get()->get_height(), carriage.get()->get_width());
+}
+
+std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball> ball, Vect& pos, float height, float width)
+{
 	std::pair<Vect, Vect> resault;
 
 	Vect ball_pos = ball.get()->get_position();
 	float radius = ball.get()->get_radius();
 
-	Carriage* carriage_p = carriage.get();
-
-	float closest_x = std::max(carriage_p->get_position().x, std::min(ball_pos.x, carriage_p->get_position().x + carriage_p->get_width()));
-	float closest_y = std::max(carriage_p->get_position().y, std::min(ball_pos.y, carriage_p->get_position().y + carriage_p->get_height()));
+	float closest_x = std::max(pos.x, std::min(ball_pos.x, pos.x + width));
+	float closest_y = std::max(pos.y, std::min(ball_pos.y, pos.y + height));
 
 	Vect to_closest = Vect(closest_x - ball_pos.x, closest_y - ball_pos.y);
 
