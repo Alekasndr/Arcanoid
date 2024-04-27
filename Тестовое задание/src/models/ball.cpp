@@ -5,6 +5,7 @@ Ball::Ball(Vect position, float radius, float speed)
 	this->position = position;
 	this->radius = radius;
 	this->speed = speed;
+	this->velocity = Vect(speed);
 }
 
 Vect Ball::get_position()
@@ -12,9 +13,19 @@ Vect Ball::get_position()
 	return position;
 }
 
-void Ball::set_width(Vect position)
+void Ball::set_position(Vect position)
 {
 	this->position = position;
+}
+
+Vect Ball::get_velocity()
+{
+	return velocity;
+}
+
+void Ball::set_velocity(Vect velocity)
+{
+	this->velocity = velocity;
 }
 
 float Ball::get_radius()
@@ -42,5 +53,6 @@ void Ball::reset(Vect position, float radius, float speed)
 	this->position = position;
 	this->radius = radius;
 	this->speed = speed;
+	this->velocity = Vect(speed);
 }
 

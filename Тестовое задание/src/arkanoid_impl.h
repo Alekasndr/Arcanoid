@@ -21,9 +21,4 @@ private:
 	void demo_add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal);
 
 	std::unique_ptr<LevelController> level_controller;
-
-	Vect demo_ball_position = Vect(0.0f);
-	Vect demo_ball_velocity = Vect(0.0f);
-	float demo_ball_radius = 0.0f;
-	float demo_ball_initial_speed = 0.0f;
 };

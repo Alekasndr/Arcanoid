@@ -17,13 +17,6 @@ void ArkanoidImpl::reset(const ArkanoidSettings& settings)
 	else {
 		level_controller.get()->reset(settings);
 	}
-
-	// TODO:
-	// remove demo code
-	demo_ball_position = Vect(640, 360);
-	demo_ball_initial_speed = settings.ball_speed;
-	demo_ball_radius = settings.ball_radius;
-	demo_ball_velocity = Vect(demo_ball_initial_speed);
 }
 
 void ArkanoidImpl::update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elapsed)
@@ -34,10 +27,6 @@ void ArkanoidImpl::update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elap
 
 	level_controller.get()->move_carriage(io);
 
-	// TODO:
-	// Implement you Arkanoid user input handling
-	// and game logic.
-	// ...
 
 	// TODO:
 	// remove demo code
@@ -62,45 +51,60 @@ void ArkanoidImpl::demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float
 
 	Vect demo_world_size = level_controller.get()->get_world().get()->get_world_size();
 
-	demo_ball_position += demo_ball_velocity * elapsed;
+	Ball* ball = level_controller.get()->get_ball().get();
+	float radius = ball->get_radius();
 
-	if (demo_ball_position.x < demo_ball_radius)
+	ball->set_position(Vect(ball->get_position() + ball->get_velocity() * elapsed));
+
+
+	if (ball->get_position().x < radius)
 	{
-		demo_ball_position.x += (demo_ball_radius - demo_ball_position.x) * 2.0f;
-		demo_ball_velocity.x *= -1.0f;
+		ball->set_position(Vect(ball->get_position().x + (radius - ball->get_position().x) * 2.0f,
+			ball->get_position().y));
 
-		demo_add_debug_hit(debug_data, Vect(0, demo_ball_position.y), Vect(1, 0));
+		ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+
+		demo_add_debug_hit(debug_data, Vect(0, ball->get_position().y), Vect(1, 0));
 	}
-	else if (demo_ball_position.x > (demo_world_size.x - demo_ball_radius))
-	{
-		demo_ball_position.x -= (demo_ball_position.x - (demo_world_size.x - demo_ball_radius)) * 2.0f;
-		demo_ball_velocity.x *= -1.0f;
 
-		demo_add_debug_hit(debug_data, Vect(demo_world_size.x, demo_ball_position.y), Vect(-1, 0));
+	else if (ball->get_position().x > (demo_world_size.x - radius))
+	{
+		ball->set_position(Vect(ball->get_position().x -
+			(ball->get_position().x - (demo_world_size.x - radius)) * 2.0f,
+			ball->get_position().y));
+
+		ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+
+		demo_add_debug_hit(debug_data, Vect(demo_world_size.x, ball->get_position().y), Vect(-1, 0));
 	}
 
-	if (demo_ball_position.y < demo_ball_radius)
+	if (ball->get_position().y < radius)
 	{
-		demo_ball_position.y += (demo_ball_radius - demo_ball_position.y) * 2.0f;
-		demo_ball_velocity.y *= -1.0f;
+		ball->set_position(Vect(ball->get_position().x,
+			ball->get_position().y + (radius - ball->get_position().y) * 2.0f));
 
-		demo_add_debug_hit(debug_data, Vect(demo_ball_position.x, 0), Vect(0, 1));
+		ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+
+		demo_add_debug_hit(debug_data, Vect(ball->get_position().x, 0), Vect(0, 1));
 	}
-	else if (demo_ball_position.y > (demo_world_size.y - demo_ball_radius))
+	else if (ball->get_position().y > (demo_world_size.y - radius))
 	{
-		demo_ball_position.y -= (demo_ball_position.y - (demo_world_size.y - demo_ball_radius)) * 2.0f;
-		demo_ball_velocity.y *= -1.0f;
+		ball->set_position(Vect(ball->get_position().x,
+			ball->get_position().y - (ball->get_position().y - (demo_world_size.y - radius)) * 2.0f));
 
-		demo_add_debug_hit(debug_data, Vect(demo_ball_position.x, demo_world_size.y), Vect(0, -1));
+		ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+
+		demo_add_debug_hit(debug_data, Vect(ball->get_position().x, demo_world_size.y), Vect(0, -1));
 	}
 }
 
 void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 {
 	Vect demo_world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
+	Ball* ball = level_controller.get()->get_ball().get();
 
-	Vect screen_pos = demo_ball_position * demo_world_to_screen;
-	float screen_radius = demo_ball_radius * demo_world_to_screen.x;
+	Vect screen_pos = ball->get_position() * demo_world_to_screen;
+	float screen_radius = ball->get_radius() * demo_world_to_screen.x;
 	draw_list.AddCircleFilled(screen_pos, screen_radius, ImColor(100, 255, 100));
 
 
