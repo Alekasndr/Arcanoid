@@ -20,9 +20,7 @@ void ArkanoidImpl::reset(const ArkanoidSettings& settings)
 
 	// TODO:
 	// remove demo code
-	demo_world_size.x = settings.world_size[0];
-	demo_world_size.y = settings.world_size[1];
-	demo_ball_position = demo_world_size * 0.5f;
+	demo_ball_position = Vect(640, 360);
 	demo_ball_initial_speed = settings.ball_speed;
 	demo_ball_radius = settings.ball_radius;
 	demo_ball_velocity = Vect(demo_ball_initial_speed);
@@ -30,15 +28,11 @@ void ArkanoidImpl::reset(const ArkanoidSettings& settings)
 
 void ArkanoidImpl::update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elapsed)
 {
-	/*
-	UserInput userInput;
-	gather_input(&user_input);
-	update_carriage(&user_input);
-	update_ball();
-	handle_collisions();
-	*/
+	World* world = level_controller.get()->get_world().get();
+	world->set_world_to_screen(Vect(io.DisplaySize.x / world->get_world_size().x,
+		io.DisplaySize.y / world->get_world_size().y));
 
-	//update_score();
+	level_controller.get()->move_carriage(io);
 
 	// TODO:
 	// Implement you Arkanoid user input handling
@@ -63,13 +57,11 @@ void ArkanoidImpl::draw(ImGuiIO& io, ImDrawList& draw_list)
 
 void ArkanoidImpl::demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elapsed)
 {
-	demo_world_to_screen = Vect(io.DisplaySize.x / demo_world_size.x, io.DisplaySize.y / demo_world_size.y);
-
-	level_controller.get()->move_carriage(io);
-
-
 	// update ball position according
 	// its velocity and elapsed time
+
+	Vect demo_world_size = level_controller.get()->get_world().get()->get_world_size();
+
 	demo_ball_position += demo_ball_velocity * elapsed;
 
 	if (demo_ball_position.x < demo_ball_radius)
@@ -105,6 +97,8 @@ void ArkanoidImpl::demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float
 
 void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 {
+	Vect demo_world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
+
 	Vect screen_pos = demo_ball_position * demo_world_to_screen;
 	float screen_radius = demo_ball_radius * demo_world_to_screen.x;
 	draw_list.AddCircleFilled(screen_pos, screen_radius, ImColor(100, 255, 100));
@@ -113,21 +107,23 @@ void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 	for (std::shared_ptr<Brick> brick : *level_controller.get()->get_bricks().get())
 	{
 		Brick* temp = brick.get();
-		draw_list.AddRectFilled(temp->get_position(),
-			Vect(temp->get_position().x + temp->get_height(),
-				temp->get_position().y + temp->get_width()),
+		draw_list.AddRectFilled(temp->get_position() * demo_world_to_screen,
+			Vect((temp->get_position().x + temp->get_height()) * demo_world_to_screen.x,
+				(temp->get_position().y + temp->get_width()) * demo_world_to_screen.y),
 			ImColor(255, 0, 0, 255));
 	}
 
 	Carriage* carrige = level_controller.get()->get_carriage().get();
-	draw_list.AddRectFilled(carrige->get_position(),
-		Vect(carrige->get_position().x + carrige->get_width(),
-			carrige->get_position().y + carrige->get_height()),
+	draw_list.AddRectFilled(carrige->get_position() * demo_world_to_screen,
+		Vect((carrige->get_position().x + carrige->get_width()) * demo_world_to_screen.x,
+			(carrige->get_position().y + carrige->get_height()) * demo_world_to_screen.y),
 		ImColor(0, 0, 255, 255));
 }
 
 void ArkanoidImpl::demo_add_debug_hit(ArkanoidDebugData& debug_data, const Vect& world_pos, const Vect& normal)
 {
+	Vect demo_world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
+
 	ArkanoidDebugData::Hit hit;
 	hit.screen_pos = world_pos * demo_world_to_screen;
 	hit.normal = normal;

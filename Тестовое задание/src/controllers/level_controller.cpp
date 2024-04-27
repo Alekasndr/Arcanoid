@@ -21,6 +21,16 @@ std::shared_ptr<Carriage> LevelController::get_carriage()
 	return carriage;
 }
 
+std::shared_ptr<Ball> LevelController::get_ball()
+{
+	return ball;
+}
+
+std::shared_ptr<World> LevelController::get_world()
+{
+	return world;
+}
+
 void LevelController::move_carriage(ImGuiIO& io)
 {
 	int direction = InputController::get_direction(io);
