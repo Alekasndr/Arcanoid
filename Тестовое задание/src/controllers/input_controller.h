@@ -5,7 +5,7 @@
 class InputController
 {
 public:
-	static int get_dirrection(ImGuiIO& io);
+	static int get_direction(ImGuiIO& io);
 private:
 };
 

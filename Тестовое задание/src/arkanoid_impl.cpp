@@ -14,19 +14,9 @@ void ArkanoidImpl::reset(const ArkanoidSettings& settings)
 	if (level_controller.get() == nullptr) {
 		level_controller = std::make_shared<LevelController>(settings);
 	}
-
-	// Пересозлание объектов
-	/*
-	reset_state();
-	create_ball(settings);
-	create_blocks(settings);
-	create_carriage(settings);
-	*/
-
-	// TODO:
-	// Implement your game world, bricks and
-	// carriage initialization
-	// ...
+	else {
+		level_controller.get()->reset(settings);
+	}
 
 	// TODO:
 	// remove demo code
@@ -69,31 +59,6 @@ void ArkanoidImpl::draw(ImGuiIO& io, ImDrawList& draw_list)
 	// TODO:
 	// remove demo code
 	demo_draw(io, draw_list);
-}
-
-void ArkanoidImpl::create_ball(const ArkanoidSettings& settings)
-{
-	/*
-	block = new Block();
-	*/
-}
-
-void ArkanoidImpl::create_blocks(const ArkanoidSettings& settings)
-{
-}
-
-void ArkanoidImpl::create_carriage(const ArkanoidSettings& settings)
-{
-}
-
-void ArkanoidImpl::reset_state()
-{
-	/*
-	if (block != nullptr) {
-		delete block;
-	}
-	//....
-	*/
 }
 
 void ArkanoidImpl::demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elapsed)

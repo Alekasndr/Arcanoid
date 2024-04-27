@@ -1,5 +1,9 @@
 #include "brick.h"
 
+Brick::Brick()
+{
+}
+
 Brick::Brick(Vect position, float height, float width)
 {
 	this->height = height;
@@ -35,4 +39,11 @@ float Brick::get_width()
 void Brick::set_width(float width)
 {
 	this->width = width;
+}
+
+void Brick::reset(Vect position, float height, float width)
+{
+	this->height = height;
+	this->width = width;
+	this->position = position;
 }

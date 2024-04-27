@@ -5,6 +5,7 @@
 class Brick
 {
 public:
+	Brick();
 	Brick(Vect position, float height, float width);
 
 	Vect get_position();
@@ -16,6 +17,7 @@ public:
 	float get_width();
 	void set_width(float width);
 
+	void reset(Vect position, float height, float width);
 private:
 	Vect position;
 	float height;

@@ -20,12 +20,6 @@ private:
 	void demo_draw(ImGuiIO& io, ImDrawList& draw_list);
 	void demo_add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal);
 
-	void create_ball(const ArkanoidSettings& settings);
-	void create_blocks(const ArkanoidSettings& settings);
-	void create_carriage(const ArkanoidSettings& settings);
-
-	void reset_state();
-
 	std::shared_ptr<LevelController> level_controller;
 
 
