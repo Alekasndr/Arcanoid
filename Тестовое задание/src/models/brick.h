@@ -17,10 +17,14 @@ public:
 	float get_width();
 	void set_width(float width);
 
+	float get_is_active();
+	void set_is_active(float is_active);
+
 	void reset(Vect position, float height, float width);
 private:
 	Vect position;
 	float height;
 	float width;
+	bool is_active;
 };
 

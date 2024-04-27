@@ -3,10 +3,11 @@
 #include <iostream>
 #include <cmath>
 
-void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
-	std::shared_ptr<World> world, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data)
+std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
+	std::shared_ptr<World> world, Vect& world_to_screen)
 {
+	std::pair<Vect, Vect> resault;
+
 	Vect demo_world_size = world.get()->get_world_size();
 
 	Ball* ball_p = ball.get();
@@ -20,7 +21,10 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
 
-		add_debug_hit(debug_data, Vect(0, ball_p->get_position().y), Vect(1, 0), world_to_screen);
+		resault.first = Vect(0, ball_p->get_position().y);
+		resault.second = Vect(1, 0);
+
+		return resault;
 	}
 
 	else if (ball_p->get_position().x > (demo_world_size.x - radius))
@@ -32,7 +36,10 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
 
-		add_debug_hit(debug_data, Vect(demo_world_size.x, ball_p->get_position().y), Vect(-1, 0), world_to_screen);
+		resault.first = Vect(demo_world_size.x, ball_p->get_position().y);
+		resault.second = Vect(-1, 0);
+
+		return resault;
 	}
 
 	if (ball_p->get_position().y < radius)
@@ -43,7 +50,10 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
-		add_debug_hit(debug_data, Vect(ball_p->get_position().x, 0), Vect(0, 1), world_to_screen);
+		resault.first = Vect(ball_p->get_position().x, 0);
+		resault.second = Vect(0, 1);
+
+		return resault;
 	}
 	else if (ball_p->get_position().y > (demo_world_size.y - radius))
 	{
@@ -53,20 +63,25 @@ void CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
-		add_debug_hit(debug_data, Vect(ball_p->get_position().x, demo_world_size.y), Vect(0, -1), world_to_screen);
+		resault.first = Vect(ball_p->get_position().x, demo_world_size.y);
+		resault.second = Vect(0, -1);
+
+		return resault;
 	}
+	return std::make_pair(Vect(0, 0), Vect(0, 0));
 }
 
-void CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
-	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data)
+std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
+	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
 {
+	return std::make_pair(Vect(0, 0), Vect(0, 0));
 }
 
-void CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
-	std::shared_ptr<Carriage> carriage, Vect& world_to_screen,
-	ArkanoidDebugData& debug_data)
+std::pair<Vect, Vect> CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
+	std::shared_ptr<Carriage> carriage, Vect& world_to_screen)
 {
+	std::pair<Vect, Vect> resault;
+
 	Vect ball_pos = ball.get()->get_position();
 	float radius = ball.get()->get_radius();
 
@@ -134,14 +149,10 @@ void CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 			}
 		}
 
-		add_debug_hit(debug_data, contactPoint, normal, world_to_screen);
-	}
-}
+		resault.first = contactPoint;
+		resault.second = normal;
 
-void CollisionHandler::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen)
-{
-	ArkanoidDebugData::Hit hit;
-	hit.screen_pos = pos * world_to_screen;
-	hit.normal = normal;
-	debug_data.hits.push_back(std::move(hit));
+		return resault;
+	}
+	return std::make_pair(Vect(0, 0), Vect(0, 0));
 }

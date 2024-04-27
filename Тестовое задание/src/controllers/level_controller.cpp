@@ -72,12 +72,37 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 	LevelGenerator::reset_bricks_list(bricks, settings);
 }
 
+
 void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 {
 	ball->set_position(Vect(ball->get_position() + ball->get_velocity() * elapsed));
 
-	CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(),
-		debug_data);
-	CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen(),
-		debug_data);
+	std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
+
+	if (check_pair(pair)) {
+		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+	}
+
+	pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
+
+	if (check_pair(pair)) {
+		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+	}
+}
+
+bool LevelController::check_pair(std::pair<Vect, Vect>& pair)
+{
+	if (pair.first.x == 0.0f && pair.first.y == 0.0f && pair.second.x == 0.0f && pair.second.y == 0.0f) {
+		return false;
+	}
+	return true;
+}
+
+
+void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen)
+{
+	ArkanoidDebugData::Hit hit;
+	hit.screen_pos = pos * world_to_screen;
+	hit.normal = normal;
+	debug_data.hits.push_back(std::move(hit));
 }

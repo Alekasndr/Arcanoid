@@ -41,6 +41,16 @@ void Brick::set_width(float width)
 	this->width = width;
 }
 
+float Brick::get_is_active()
+{
+	return is_active;
+}
+
+void Brick::set_is_active(float is_active)
+{
+	this->is_active = is_active;
+}
+
 void Brick::reset(Vect position, float height, float width)
 {
 	this->height = height;

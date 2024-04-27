@@ -18,6 +18,8 @@ public:
 	void update(ArkanoidDebugData& debug_data, float elapsed);
 private:
 	void bricks_reset(const ArkanoidSettings& settings);
+	bool check_pair(std::pair<Vect, Vect>& pair);
+	void add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen);
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks;
 	std::shared_ptr<World> world;
 	std::shared_ptr<Carriage> carriage;
