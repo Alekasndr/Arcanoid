@@ -15,7 +15,6 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 
 	if (ball_p->get_position().x < radius)
 	{
-		std::cout << "1" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x) * 2.0f,
 			ball_p->get_position().y));
 
@@ -29,7 +28,6 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 
 	else if (ball_p->get_position().x > (demo_world_size.x - radius))
 	{
-		std::cout << "2" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x -
 			(ball_p->get_position().x - (demo_world_size.x - radius)) * 2.0f,
 			ball_p->get_position().y));
@@ -44,7 +42,6 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 
 	if (ball_p->get_position().y < radius)
 	{
-		std::cout << "3" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x,
 			ball_p->get_position().y + (radius - ball_p->get_position().y) * 2.0f));
 
@@ -74,7 +71,14 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
 {
-	return std::make_pair(Vect(0, 0), Vect(0, 0));
+	std::pair<Vect, Vect> resault;
+	for (std::shared_ptr<Brick> brick : *bricks.get())
+	{
+		Brick* temp = brick.get();
+		resault = collision_with_rect(ball, temp->get_position(),
+			temp->get_height(), temp->get_width());
+	}
+	return resault;
 }
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,

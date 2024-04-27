@@ -46,7 +46,7 @@ void LevelController::move_carriage(ImGuiIO& io)
 void LevelController::reset(const ArkanoidSettings& settings)
 {
 	this->world.get()->reset(settings.world_size);
-	this->ball.get()->reset(Vect(0.0f, 0.0f), settings.ball_radius, settings.ball_speed);
+	this->ball.get()->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
 	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
 	bricks_reset(settings);
 }
@@ -83,6 +83,12 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 	}
 
 	pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
+
+	if (check_pair(pair)) {
+		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+	}
+
+	pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
 
 	if (check_pair(pair)) {
 		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
