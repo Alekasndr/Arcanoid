@@ -20,8 +20,7 @@ private:
 	void demo_draw(ImGuiIO& io, ImDrawList& draw_list);
 	void demo_add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal);
 
-	std::shared_ptr<LevelController> level_controller;
-
+	std::unique_ptr<LevelController> level_controller;
 
 	Vect demo_world_size = Vect(0.0f);
 	Vect demo_world_to_screen = Vect(0.0f);

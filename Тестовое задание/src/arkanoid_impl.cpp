@@ -12,7 +12,7 @@ Arkanoid* create_arkanoid()
 void ArkanoidImpl::reset(const ArkanoidSettings& settings)
 {
 	if (level_controller.get() == nullptr) {
-		level_controller = std::make_shared<LevelController>(settings);
+		level_controller = std::make_unique<LevelController>(settings);
 	}
 	else {
 		level_controller.get()->reset(settings);
@@ -67,21 +67,6 @@ void ArkanoidImpl::demo_update(ImGuiIO& io, ArkanoidDebugData& debug_data, float
 
 	level_controller.get()->move_carriage(io);
 
-	// process user input
-	if (io.KeysDown[GLFW_KEY_A])
-		demo_ball_velocity.x -= 1.0f;
-
-	if (io.KeysDown[GLFW_KEY_D])
-		demo_ball_velocity.x += 1.0f;
-
-	if (io.KeysDown[GLFW_KEY_W])
-		demo_ball_velocity.y -= 1.0f;
-
-	if (io.KeysDown[GLFW_KEY_S])
-		demo_ball_velocity.y += 1.0f;
-
-	if (io.KeysDown[GLFW_KEY_ESCAPE])
-		demo_ball_velocity = Vect(demo_ball_initial_speed);
 
 	// update ball position according
 	// its velocity and elapsed time
@@ -123,7 +108,6 @@ void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 	Vect screen_pos = demo_ball_position * demo_world_to_screen;
 	float screen_radius = demo_ball_radius * demo_world_to_screen.x;
 	draw_list.AddCircleFilled(screen_pos, screen_radius, ImColor(100, 255, 100));
-
 
 
 	for (std::shared_ptr<Brick> brick : *level_controller.get()->get_bricks().get())

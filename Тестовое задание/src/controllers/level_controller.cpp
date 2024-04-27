@@ -42,8 +42,8 @@ void LevelController::reset(const ArkanoidSettings& settings)
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
 {
-	// Тут работу с памятью можно улучшить с помощью реализации пула,
-	// Но это требует дополнительных затрат времени
+	// Тут работу с памятью еще лучше можно оптимизировать работу с памятью, с помощью пула
+	// но тербует дополнительных затрат времени и избыточно для данного задания
 	int size = bricks.get()->size();
 	int new_size = settings.bricks_columns_count * settings.bricks_rows_count;
 
