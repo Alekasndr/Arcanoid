@@ -48,6 +48,7 @@ void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 	draw_list.AddCircleFilled(screen_pos, screen_radius, ImColor(100, 255, 100));
 
 
+	/*
 	for (std::shared_ptr<Brick> brick : *level_controller.get()->get_bricks().get())
 	{
 		Brick* temp = brick.get();
@@ -56,6 +57,7 @@ void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 				(temp->get_position().y + temp->get_width()) * demo_world_to_screen.y),
 			ImColor(255, 0, 0, 255));
 	}
+	*/
 
 	Carriage* carrige = level_controller.get()->get_carriage().get();
 	draw_list.AddRectFilled(carrige->get_position() * demo_world_to_screen,

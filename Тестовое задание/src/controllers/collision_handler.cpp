@@ -116,44 +116,52 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 		if (to_closest.x > 0) {
 			if (to_closest.y > 0) {
 				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
-					normal = { 1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { -1, 0 };
+					if (ball->get_velocity().x > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, -1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((closest_x - ball_pos.x) > (ball_pos.y - closest_y)) {
-					normal = { 1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { -1, 0 };
+					if (ball->get_velocity().x > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}
 		else {
 			if (to_closest.y > 0) {
 				if ((ball_pos.x - closest_x) > (closest_y - ball_pos.y)) {
-					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { 1, 0 };
+					if (ball->get_velocity().x < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, -1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((ball_pos.x - closest_x) > (ball_pos.y - closest_y)) {
-					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { 1, 0 };
+					if (ball->get_velocity().x < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}

@@ -21,7 +21,7 @@ public:
 	void reset(Vect position, float width);
 private:
 	Vect position;
-	float height = 10.0f;
+	float height = 100.0f;
 	float width = 100.0f;
 	float speed = 10.0f;
 };

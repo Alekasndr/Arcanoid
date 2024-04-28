@@ -7,9 +7,9 @@
 LevelController::LevelController(const ArkanoidSettings& settings)
 {
 	this->world = std::make_shared<World>(settings.world_size);
-	this->ball = std::make_shared<Ball>(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
-	this->carriage = std::make_shared<Carriage>(Vect(world.get()->get_world_size().x / 2.0f - (settings.carriage_width / 2.0f), settings.world_size.y - 20.0f), settings.carriage_width);
-	this->bricks = LevelGenerator::create_bricks_list(settings);
+	this->ball = std::make_shared<Ball>(Vect(100.0f, 100.0f), settings.ball_radius, settings.ball_speed);
+	this->carriage = std::make_shared<Carriage>(Vect(301.0f, 300.0f), 50.0f);
+	//this->bricks = LevelGenerator::create_bricks_list(settings);
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelController::get_bricks()
@@ -46,9 +46,9 @@ void LevelController::move_carriage(ImGuiIO& io)
 void LevelController::reset(const ArkanoidSettings& settings)
 {
 	this->world.get()->reset(settings.world_size);
-	this->ball.get()->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
-	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
-	bricks_reset(settings);
+	this->ball.get()->reset(Vect(100.0f, 100.0f), settings.ball_radius, settings.ball_speed);
+	this->carriage.get()->reset(Vect(301.0f, 300.0f), 50.0f);
+	//bricks_reset(settings);
 }
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
@@ -88,11 +88,13 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 	}
 
+	/*
 	pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
 
 	if (check_pair(pair)) {
 		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 	}
+	*/
 }
 
 bool LevelController::check_pair(std::pair<Vect, Vect>& pair)
