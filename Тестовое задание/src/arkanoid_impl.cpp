@@ -32,14 +32,6 @@ void ArkanoidImpl::update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elap
 
 void ArkanoidImpl::draw(ImGuiIO& io, ImDrawList& draw_list)
 {
-
-	// TODO:
-	// remove demo code
-	demo_draw(io, draw_list);
-}
-
-void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
-{
 	Vect demo_world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
 	Ball* ball = level_controller.get()->get_ball().get();
 
@@ -52,8 +44,8 @@ void ArkanoidImpl::demo_draw(ImGuiIO& io, ImDrawList& draw_list)
 	{
 		Brick* temp = brick.get();
 		draw_list.AddRectFilled(temp->get_position() * demo_world_to_screen,
-			Vect((temp->get_position().x + temp->get_height()) * demo_world_to_screen.x,
-				(temp->get_position().y + temp->get_width()) * demo_world_to_screen.y),
+			Vect((temp->get_position().x + temp->get_width()) * demo_world_to_screen.x,
+				(temp->get_position().y + temp->get_height()) * demo_world_to_screen.y),
 			ImColor(255, 0, 0, 255));
 	}
 

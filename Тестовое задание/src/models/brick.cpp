@@ -4,10 +4,10 @@ Brick::Brick()
 {
 }
 
-Brick::Brick(Vect position, float height, float width)
+Brick::Brick(Vect position, float width, float height)
 {
-	this->height = height;
 	this->width = width;
+	this->height = height;
 	this->position = position;
 	this->is_active = true;
 }
@@ -52,10 +52,10 @@ void Brick::set_is_active(float is_active)
 	this->is_active = is_active;
 }
 
-void Brick::reset(Vect position, float height, float width)
+void Brick::reset(Vect position, float width, float height)
 {
-	this->height = height;
 	this->width = width;
+	this->height = height;
 	this->position = position;
 	this->is_active = true;
 }

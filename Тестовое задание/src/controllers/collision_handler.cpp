@@ -1,4 +1,4 @@
-#include "collision_handler.h"
+п»ї#include "collision_handler.h"
 
 #include <iostream>
 #include <cmath>
@@ -15,7 +15,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 
 	if (ball_p->get_position().x < radius)
 	{
-		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x) * 2.0f,
+		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x),
 			ball_p->get_position().y));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
@@ -29,7 +29,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	else if (ball_p->get_position().x > (demo_world_size.x - radius))
 	{
 		ball_p->set_position(Vect(ball_p->get_position().x -
-			(ball_p->get_position().x - (demo_world_size.x - radius)) * 2.0f,
+			(ball_p->get_position().x - (demo_world_size.x - radius)),
 			ball_p->get_position().y));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
@@ -43,7 +43,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	if (ball_p->get_position().y < radius)
 	{
 		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y + (radius - ball_p->get_position().y) * 2.0f));
+			ball_p->get_position().y + (radius - ball_p->get_position().y)));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
@@ -56,7 +56,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	{
 		std::cout << "You Lose!" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius)) * 2.0f));
+			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
@@ -101,64 +101,71 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 
 	Vect to_closest = Vect(closest_x - ball_pos.x, closest_y - ball_pos.y);
 
-	float lengthSquared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
+	float length_squared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
+	float length = sqrt(length_squared);
 
-	if (lengthSquared <= radius * radius) {
+	if (length <= radius) {
 
-		float length = sqrt(lengthSquared);
 		to_closest.x /= length;
 		to_closest.y /= length;
 
-		// Находим точку контакта
-		Vect contactPoint = Vect(ball_pos.x + radius * to_closest.x, ball_pos.y + radius * to_closest.y);
-
+		Vect contac_ptoint = { ball_pos.x + radius * to_closest.x, ball_pos.y + radius * to_closest.y };
 		Vect normal;
+
 		if (to_closest.x > 0) {
 			if (to_closest.y > 0) {
 				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
-					normal = { 1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { -1, 0 };
+					if (ball->get_velocity().x > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, -1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((closest_x - ball_pos.x) > (ball_pos.y - closest_y)) {
-					normal = { 1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { -1, 0 };
+					if (ball->get_velocity().x > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}
 		else {
 			if (to_closest.y > 0) {
 				if ((ball_pos.x - closest_x) > (closest_y - ball_pos.y)) {
-					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { 1, 0 };
+					if (ball->get_velocity().x < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, -1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y > 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 			else {
 				if ((ball_pos.x - closest_x) > (ball_pos.y - closest_y)) {
-					normal = { -1, 0 };
-					ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
+					normal = { 1, 0 };
+					if (ball->get_velocity().x < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
 					normal = { 0, 1 };
-					ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
+					if (ball->get_velocity().y < 0)
+						ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 				}
 			}
 		}
 
-		resault.first = contactPoint;
+		resault.first = contac_ptoint;
 		resault.second = normal;
 
 		return resault;
