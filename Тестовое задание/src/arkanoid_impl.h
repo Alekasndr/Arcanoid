@@ -16,7 +16,5 @@ public:
 	void draw(ImGuiIO& io, ImDrawList& draw_list) override;
 
 private:
-	void demo_draw(ImGuiIO& io, ImDrawList& draw_list);
-
 	std::unique_ptr<LevelController> level_controller;
 };

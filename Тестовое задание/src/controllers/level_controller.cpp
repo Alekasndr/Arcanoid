@@ -3,6 +3,7 @@
 #include "collision_handler.h"
 
 #include <iostream>
+#include "../utils.h"
 
 LevelController::LevelController(const ArkanoidSettings& settings)
 {
@@ -74,11 +75,12 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 
 void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 {
-
 	Vect passed_distance = ball->get_velocity() * elapsed;
-	float range = sqrt(passed_distance.x * passed_distance.x + passed_distance.y * passed_distance.y);
+	float range = Utils::length(passed_distance);
 	float radius = ball->get_radius();
 
+	// Относительно примитивная реализация для фикса большой скорости при маленьком радиусе
+	// В идеале использовать варианты с рейкастом, но для тестового это слишком долго
 	while (range > 0) {
 		Vect current_velocity = ball->get_velocity();
 		Vect current_direction = current_velocity / sqrt(current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y);
@@ -91,32 +93,24 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 
 		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
 
-		if (check_pair(pair)) {
+		if (Utils::check_pair(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
 		pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
 
-		if (check_pair(pair)) {
+		if (Utils::check_pair(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
 		pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
 
-		if (check_pair(pair)) {
+		if (Utils::check_pair(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
 		range -= radius;
 	}
-}
-
-bool LevelController::check_pair(std::pair<Vect, Vect>& pair)
-{
-	if (pair.first.x == 0.0f && pair.first.y == 0.0f && pair.second.x == 0.0f && pair.second.y == 0.0f) {
-		return false;
-	}
-	return true;
 }
 
 void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen)

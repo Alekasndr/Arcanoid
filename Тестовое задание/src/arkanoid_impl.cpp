@@ -32,27 +32,27 @@ void ArkanoidImpl::update(ImGuiIO& io, ArkanoidDebugData& debug_data, float elap
 
 void ArkanoidImpl::draw(ImGuiIO& io, ImDrawList& draw_list)
 {
-	Vect demo_world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
+	Vect world_to_screen = level_controller.get()->get_world().get()->get_world_to_screen();
 	Ball* ball = level_controller.get()->get_ball().get();
 
-	Vect screen_pos = ball->get_position() * demo_world_to_screen;
-	float screen_radius = ball->get_radius() * demo_world_to_screen.x;
+	Vect screen_pos = ball->get_position() * world_to_screen;
+	float screen_radius = ball->get_radius() * world_to_screen.x;
 	draw_list.AddCircleFilled(screen_pos, screen_radius, ImColor(100, 255, 100));
 
 
 	for (std::shared_ptr<Brick> brick : *level_controller.get()->get_bricks().get())
 	{
 		Brick* temp = brick.get();
-		draw_list.AddRectFilled(temp->get_position() * demo_world_to_screen,
-			Vect((temp->get_position().x + temp->get_width()) * demo_world_to_screen.x,
-				(temp->get_position().y + temp->get_height()) * demo_world_to_screen.y),
+		draw_list.AddRectFilled(temp->get_position() * world_to_screen,
+			Vect((temp->get_position().x + temp->get_width()) * world_to_screen.x,
+				(temp->get_position().y + temp->get_height()) * world_to_screen.y),
 			ImColor(255, 0, 0, 255));
 	}
 
 	Carriage* carrige = level_controller.get()->get_carriage().get();
-	draw_list.AddRectFilled(carrige->get_position() * demo_world_to_screen,
-		Vect((carrige->get_position().x + carrige->get_width()) * demo_world_to_screen.x,
-			(carrige->get_position().y + carrige->get_height()) * demo_world_to_screen.y),
+	draw_list.AddRectFilled(carrige->get_position() * world_to_screen,
+		Vect((carrige->get_position().x + carrige->get_width()) * world_to_screen.x,
+			(carrige->get_position().y + carrige->get_height()) * world_to_screen.y),
 		ImColor(0, 0, 255, 255));
 }
 

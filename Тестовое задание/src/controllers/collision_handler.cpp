@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include "../utils.h"
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
 	std::shared_ptr<World> world, Vect& world_to_screen)
@@ -13,8 +14,12 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	Ball* ball_p = ball.get();
 	float radius = ball_p->get_radius();
 
+	// Сохранил реализацию расчета коллизии с миром из примера
+	// Однако пофиксил использование magic number 2.0f
 	if (ball_p->get_position().x < radius)
 	{
+		// Эта часть нарушает принцип единсвенной ответсвнности
+		// Но поскольку так было в примере решил ее оставил
 		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x),
 			ball_p->get_position().y));
 
@@ -71,13 +76,20 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
 {
+	std::vector<std::pair<Vect, Vect>> resaults;
 	std::pair<Vect, Vect> resault;
 
-	for (std::shared_ptr<Brick> brick : *bricks.get())
+	for (auto brick : *bricks.get())
 	{
-		Brick* temp = brick.get();
-		resault = collision_with_rect(ball, temp->get_position(),
-			temp->get_height(), temp->get_width());
+		Brick* brick_p = brick.get();
+		resault = collision_with_rect(ball, brick_p->get_position(),
+			brick_p->get_height(), brick_p->get_width());
+		resaults.push_back(resault);
+	}
+	for (auto iter : resaults) {
+		if (Utils::check_pair(iter)) {
+			return iter;
+		}
 	}
 	return resault;
 }
@@ -101,8 +113,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 
 	Vect to_closest = Vect(closest_x - ball_pos.x, closest_y - ball_pos.y);
 
-	float length_squared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
-	float length = sqrt(length_squared);
+	float length = Utils::length(to_closest);
 
 	if (length <= radius) {
 
@@ -117,6 +128,8 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
 					normal = { -1, 0 };
 					if (ball->get_velocity().x > 0)
+						// Тоже нарушает принцип единсвенной ответсвнности, но т.к. коллизия с миром уже	
+						// Это делает, решил все сделать в одном стиле
 						ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 				}
 				else {
