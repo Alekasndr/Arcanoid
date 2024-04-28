@@ -74,19 +74,36 @@ void LevelController::bricks_reset(const ArkanoidSettings& settings)
 
 void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 {
-	ball->set_position(Vect(ball->get_position() + ball->get_velocity() * elapsed));
+	Vect passed_distance = ball->get_velocity() * elapsed;
+	float range = sqrt(passed_distance.x * passed_distance.x + passed_distance.y * passed_distance.y);
+	float radius = ball->get_radius();
 
-	std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
+	while (range > 0) {
+		Vect current_velocity = ball->get_velocity();
+		Vect current_direction = current_velocity / sqrt(current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y);
+		if (range < radius) {
+			ball->set_position(Vect(ball->get_position() + current_direction * (radius - range)));
+		}
+		else {
+			ball->set_position(Vect(ball->get_position() + current_direction * radius));
+		}
 
-	if (check_pair(pair)) {
-		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
+
+		if (check_pair(pair)) {
+			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+		}
+
+		pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
+
+		if (check_pair(pair)) {
+			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+		}
+
+		range -= radius;
 	}
 
-	pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
 
-	if (check_pair(pair)) {
-		add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
-	}
 
 	/*
 	pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());

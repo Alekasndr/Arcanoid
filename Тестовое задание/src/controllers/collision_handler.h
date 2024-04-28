@@ -20,5 +20,6 @@ public:
 		Vect& world_to_screen);
 private:
 	static std::pair<Vect, Vect> collision_with_rect(std::shared_ptr<Ball> ball, Vect& pos, float height, float width);
+	static float speed_normalization(float height, float width);
 };
 

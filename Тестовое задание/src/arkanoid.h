@@ -18,7 +18,7 @@ struct ArkanoidSettings
 	static constexpr float ball_radius_min = 5.0f;
 	static constexpr float ball_radius_max = 50.0f;
 	static constexpr float ball_speed_min = 1.0f;
-	static constexpr float ball_speed_max = 1000.0f;
+	static constexpr float ball_speed_max = 100000.0f;
 
 	static constexpr float carriage_width_min = 50.0f;
 

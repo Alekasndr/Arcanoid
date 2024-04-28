@@ -13,9 +13,11 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	Ball* ball_p = ball.get();
 	float radius = ball_p->get_radius();
 
+	// Использовал предоставленный алгоритм коллизии со стенами
+	// Пофиксил использование magic number 2.0f
 	if (ball_p->get_position().x < radius)
 	{
-		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x) * 2.0f,
+		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x),
 			ball_p->get_position().y));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
@@ -29,7 +31,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	else if (ball_p->get_position().x > (demo_world_size.x - radius))
 	{
 		ball_p->set_position(Vect(ball_p->get_position().x -
-			(ball_p->get_position().x - (demo_world_size.x - radius)) * 2.0f,
+			(ball_p->get_position().x - (demo_world_size.x - radius)),
 			ball_p->get_position().y));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
@@ -43,7 +45,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	if (ball_p->get_position().y < radius)
 	{
 		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y + (radius - ball_p->get_position().y) * 2.0f));
+			ball_p->get_position().y + (radius - ball_p->get_position().y)));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
@@ -56,7 +58,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	{
 		std::cout << "You Lose!" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius)) * 2.0f));
+			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));
 
 		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
 
@@ -93,26 +95,32 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 {
 	std::pair<Vect, Vect> resault;
 
-	Vect ball_pos = ball.get()->get_position();
-	float radius = ball.get()->get_radius();
+	struct Vector {
+		double x, y;
+	};
 
-	float closest_x = std::max(pos.x, std::min(ball_pos.x, pos.x + width));
-	float closest_y = std::max(pos.y, std::min(ball_pos.y, pos.y + height));
+	Vector ball_pos = { static_cast<double>(ball.get()->get_position().x), static_cast<double>(ball.get()->get_position().y) };
+	double radius = static_cast<double>(ball.get()->get_radius());
 
-	Vect to_closest = Vect(closest_x - ball_pos.x, closest_y - ball_pos.y);
+	Vector pos_d = { static_cast<double>(pos.x) ,static_cast<double>(pos.y) };
 
-	float lengthSquared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
+	double closest_x = std::max(pos_d.x, std::min(ball_pos.x, pos_d.x + static_cast<double>(width)));
+	double closest_y = std::max(pos_d.y, std::min(ball_pos.y, pos_d.y + static_cast<double>(height)));
 
-	if (lengthSquared <= radius * radius) {
+	Vector to_closest = { closest_x - ball_pos.x, closest_y - ball_pos.y };
 
-		float length = sqrt(lengthSquared);
+	double lengthSquared = (to_closest.x * to_closest.x) + (to_closest.y * to_closest.y);
+	double length = sqrt(lengthSquared);
+
+	if (length <= radius) {
+
 		to_closest.x /= length;
 		to_closest.y /= length;
 
 		// Находим точку контакта
-		Vect contactPoint = Vect(ball_pos.x + radius * to_closest.x, ball_pos.y + radius * to_closest.y);
+		Vector contactPoint = { ball_pos.x + radius * to_closest.x, ball_pos.y + radius * to_closest.y };
 
-		Vect normal;
+		Vector normal;
 		if (to_closest.x > 0) {
 			if (to_closest.y > 0) {
 				if ((closest_x - ball_pos.x) > (closest_y - ball_pos.y)) {
@@ -166,10 +174,22 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball
 			}
 		}
 
-		resault.first = contactPoint;
-		resault.second = normal;
+		resault.first = Vect(static_cast<float>(contactPoint.x), static_cast<float>(contactPoint.y));
+		resault.second = Vect(static_cast<float>(normal.x), static_cast<float>(normal.y));
 
 		return resault;
 	}
 	return std::make_pair(Vect(0, 0), Vect(0, 0));
+}
+
+float CollisionHandler::speed_normalization(float radius, float speed)
+{
+	float normalization_coef = 15.0f;
+	float curent_coef = speed / radius;
+
+	if (curent_coef > normalization_coef) {
+		return curent_coef / normalization_coef;
+	}
+
+	return 1.0f;
 }
