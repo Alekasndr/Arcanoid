@@ -16,9 +16,6 @@ public:
 	float get_radius();
 	void set_radius(float radius);
 
-	float get_speed();
-	void set_speed(float speed);
-
 	float get_is_active();
 	void set_is_active(float is_active);
 

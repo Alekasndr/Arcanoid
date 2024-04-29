@@ -2,6 +2,8 @@
 #include "collision_handler.h"
 
 #include <iostream>
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "../utils/utils.h"
 #include "../utils/record_serializator.h"
 #include <GLFW/glfw3.h>
@@ -112,11 +114,35 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 void LevelController::ball_move_with_carriage()
 {
 	int direction = carriage->get_direction();
-	std::cout << direction << std::endl;
 	if (direction != 0) {
+		float movement_angle = atan2(ball->get_velocity().y, ball->get_velocity().x);
+		float angle_barrier = M_PI / 6;
+		float degree = M_PI / 180;
+		float bias = 20.0f;
 
-		ball->set_velocity(Vect(ball->get_velocity().x + direction * (fabs(ball->get_velocity().x) / 3.0f),
-			ball->get_velocity().y));
+		if (movement_angle > M_PI - angle_barrier) {
+			if (direction == 1) {
+				movement_angle -= degree * bias;
+			}
+		}
+		else if (movement_angle < angle_barrier) {
+			if (direction == -1) {
+				movement_angle += degree * bias;
+			}
+		}
+		else {
+			movement_angle += direction * degree * bias;
+		}
+
+		float length = Utils::length(ball->get_velocity());
+		Vect norm_velocity = Vect(cos(movement_angle), sin(movement_angle));
+
+		ball->set_velocity(Vect(norm_velocity.x * length, norm_velocity.y * length));
+
+		std::cout << std::endl;
+		std::cout << " x: " << ball->get_velocity().x << " y: " << ball->get_velocity().y << std::endl;
+		std::cout << std::endl;
+
 	}
 }
 
