@@ -63,7 +63,8 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 		ball_p->set_position(Vect(ball_p->get_position().x,
 			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));
 
-		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
+		ball_p->set_velocity(Vect(0, 0));
+		ball_p->set_is_active(false);
 
 		resault.first = Vect(ball_p->get_position().x, demo_world_size.y);
 		resault.second = Vect(0, -1);
@@ -76,21 +77,21 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
 {
-	std::vector<std::pair<Vect, Vect>> resaults;
-	std::pair<Vect, Vect> resault;
+	std::pair<Vect, Vect> resault = std::make_pair(Vect(0, 0), Vect(0, 0));
 
 	for (auto brick : *bricks.get())
 	{
 		Brick* brick_p = brick.get();
-		resault = collision_with_rect(ball, brick_p->get_position(),
-			brick_p->get_height(), brick_p->get_width());
-		resaults.push_back(resault);
-	}
-	for (auto iter : resaults) {
-		if (Utils::check_pair(iter)) {
-			return iter;
+		if (brick_p->get_is_active()) {
+			resault = collision_with_rect(ball, brick_p->get_position(),
+				brick_p->get_height(), brick_p->get_width());
+			if (!Utils::is_pair_zero(resault)) {
+				brick_p->set_is_active(false);
+				return resault;
+			}
 		}
 	}
+
 	return resault;
 }
 

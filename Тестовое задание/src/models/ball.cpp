@@ -6,6 +6,7 @@ Ball::Ball(Vect position, float radius, float speed)
 	this->radius = radius;
 	this->speed = speed;
 	this->velocity = Vect(speed);
+	this->is_active = true;
 }
 
 Vect Ball::get_position()
@@ -48,11 +49,22 @@ void Ball::set_speed(float speed)
 	this->speed = speed;
 }
 
+float Ball::get_is_active()
+{
+	return is_active;
+}
+
+void Ball::set_is_active(float is_active)
+{
+	this->is_active = is_active;
+}
+
 void Ball::reset(Vect position, float radius, float speed)
 {
 	this->position = position;
 	this->radius = radius;
 	this->speed = speed;
 	this->velocity = Vect(speed);
+	this->is_active = true;
 }
 

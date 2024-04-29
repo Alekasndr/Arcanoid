@@ -7,7 +7,7 @@ std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelGenerator::create_bric
 
 	float width = (settings.world_size.x - (settings.bricks_columns_padding * settings.bricks_columns_count + 1.0f))
 		/ settings.bricks_columns_count;
-	float height = ((settings.world_size.y / 5.0f) - (settings.bricks_rows_padding * settings.bricks_rows_count + 1.0f))
+	float height = ((settings.world_size.y / 3.0f) - (settings.bricks_rows_padding * settings.bricks_rows_count + 1.0f))
 		/ settings.bricks_rows_count;
 
 	for (int i = 0; i < settings.bricks_columns_count; i++) {
@@ -25,7 +25,7 @@ void LevelGenerator::reset_bricks_list(std::shared_ptr<std::vector<std::shared_p
 {
 	float width = (settings.world_size.x - (settings.bricks_columns_padding * settings.bricks_columns_count + 1.0f))
 		/ settings.bricks_columns_count;
-	float height = ((settings.world_size.y / 5.0f) - (settings.bricks_rows_padding * settings.bricks_rows_count + 1.0f))
+	float height = ((settings.world_size.y / 3.0f) - (settings.bricks_rows_padding * settings.bricks_rows_count + 1.0f))
 		/ settings.bricks_rows_count;
 
 	int count = 0;

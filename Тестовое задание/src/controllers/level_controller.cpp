@@ -54,7 +54,7 @@ void LevelController::reset(const ArkanoidSettings& settings)
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
 {
-	// Тут работу с памятью еще лучше можно оптимизировать, с помощью пула
+	// Тут работу с памятью еще лучше можно оптимизировать с помощью пула,
 	// но тербует дополнительных затрат времени и избыточно для данного задания
 	int size = bricks.get()->size();
 	int new_size = settings.bricks_columns_count * settings.bricks_rows_count;
@@ -80,7 +80,7 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 	float radius = ball->get_radius();
 
 	// Относительно примитивная реализация для фикса большой скорости при маленьком радиусе
-	// В идеале использовать варианты с рейкастом, но для тестового это слишком долго
+	// В идеале использовать рейкаст, но это требует больших временных затрат
 	while (range > 0) {
 		Vect current_velocity = ball->get_velocity();
 		Vect current_direction = current_velocity / sqrt(current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y);
@@ -93,19 +93,19 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 
 		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
 
-		if (Utils::check_pair(pair)) {
+		if (!Utils::is_pair_zero(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
 		pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
 
-		if (Utils::check_pair(pair)) {
+		if (!Utils::is_pair_zero(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
 		pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
 
-		if (Utils::check_pair(pair)) {
+		if (!Utils::is_pair_zero(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 

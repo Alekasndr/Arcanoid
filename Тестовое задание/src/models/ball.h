@@ -19,6 +19,9 @@ public:
 	float get_speed();
 	void set_speed(float speed);
 
+	float get_is_active();
+	void set_is_active(float is_active);
+
 	void reset(Vect position, float radius, float speed);
 private:
 	Vect position;
@@ -26,5 +29,7 @@ private:
 
 	float radius = 10.0f;
 	float speed = 150.0f;
+
+	bool is_active = true;
 };
 

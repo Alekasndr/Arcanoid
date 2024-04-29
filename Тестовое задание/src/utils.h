@@ -6,7 +6,7 @@
 class Utils
 {
 public:
-	static bool check_pair(std::pair<Vect, Vect>& pair);
+	static bool is_pair_zero(std::pair<Vect, Vect>& pair);
 	static float length(Vect vect);
 };
 
