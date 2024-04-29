@@ -4,6 +4,7 @@
 #include "../models/carriage.h"
 #include "../models/ball.h"
 #include "../models/brick.h"
+#include "../models/score.h"
 
 class LevelController
 {
@@ -23,5 +24,6 @@ private:
 	std::shared_ptr<World> world;
 	std::shared_ptr<Carriage> carriage;
 	std::shared_ptr<Ball> ball;
+	std::shared_ptr<Score> score;
 };
 

@@ -59,6 +59,7 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	}
 	else if (ball_p->get_position().y > (demo_world_size.y - radius))
 	{
+		std::cout << std::endl;
 		std::cout << "You Lose!" << std::endl;
 		ball_p->set_position(Vect(ball_p->get_position().x,
 			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));

@@ -11,6 +11,7 @@ LevelController::LevelController(const ArkanoidSettings& settings)
 	this->ball = std::make_shared<Ball>(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
 	this->carriage = std::make_shared<Carriage>(Vect(world.get()->get_world_size().x / 2.0f - (settings.carriage_width / 2.0f), settings.world_size.y - 20.0f), settings.carriage_width);
 	this->bricks = LevelGenerator::create_bricks_list(settings);
+	this->score = std::make_shared<Score>(1);
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelController::get_bricks()
@@ -33,23 +34,13 @@ std::shared_ptr<World> LevelController::get_world()
 	return world;
 }
 
-void LevelController::move_carriage(ImGuiIO& io)
-{
-	int direction = InputController::get_direction(io);
-	Vect new_pos = Vect(carriage.get()->get_position().x + direction * carriage.get()->get_speed(),
-		carriage.get()->get_position().y);
-
-	if (new_pos.x > 0 && new_pos.x + carriage.get()->get_width() < world.get()->get_world_size().x) {
-		carriage.get()->set_position(new_pos);
-	}
-}
-
 void LevelController::reset(const ArkanoidSettings& settings)
 {
 	this->world.get()->reset(settings.world_size);
 	this->ball.get()->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
 	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
 	bricks_reset(settings);
+	this->score.get()->reset(1);
 }
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
@@ -80,7 +71,7 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 	float radius = ball->get_radius();
 
 	// Относительно примитивная реализация для фикса большой скорости при маленьком радиусе
-	// В идеале использовать рейкаст, но это требует больших временных затрат
+	// Для больших проектов в лучше использовать рейкаст
 	while (range > 0) {
 		Vect current_velocity = ball->get_velocity();
 		Vect current_direction = current_velocity / sqrt(current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y);
@@ -106,6 +97,9 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 		pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
 
 		if (!Utils::is_pair_zero(pair)) {
+			Score* score_p = score.get();
+			score_p->set_current_score(score_p->get_current_score() + 1);
+			std::cout << "Score: " << score_p->get_current_score() << std::endl;
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
@@ -119,4 +113,15 @@ void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& p
 	hit.screen_pos = pos * world_to_screen;
 	hit.normal = normal;
 	debug_data.hits.push_back(std::move(hit));
+}
+
+void LevelController::move_carriage(ImGuiIO& io)
+{
+	int direction = InputController::get_direction(io);
+	Vect new_pos = Vect(carriage.get()->get_position().x + direction * carriage.get()->get_speed(),
+		carriage.get()->get_position().y);
+
+	if (new_pos.x > 0 && new_pos.x + carriage.get()->get_width() < world.get()->get_world_size().x) {
+		carriage.get()->set_position(new_pos);
+	}
 }
