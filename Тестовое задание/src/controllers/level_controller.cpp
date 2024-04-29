@@ -1,5 +1,4 @@
 #include "level_controller.h"
-#include "input_controller.h"
 #include "collision_handler.h"
 
 #include <iostream>
