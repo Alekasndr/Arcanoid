@@ -26,7 +26,7 @@ private:
 	Vect position;
 	float height = 10.0f;
 	float width = 100.0f;
-	float speed = 10.0f;
+	float speed = 14.0f;
 	int direction = 0;
 };
 

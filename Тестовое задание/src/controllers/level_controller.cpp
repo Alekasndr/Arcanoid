@@ -115,34 +115,27 @@ void LevelController::ball_move_with_carriage()
 {
 	int direction = carriage->get_direction();
 	if (direction != 0) {
-		float movement_angle = atan2(ball->get_velocity().y, ball->get_velocity().x);
-		float angle_barrier = M_PI / 6;
-		float degree = M_PI / 180;
-		float bias = 20.0f;
+		float ball_speed = Utils::length(ball->get_velocity());
 
-		if (movement_angle > M_PI - angle_barrier) {
-			if (direction == 1) {
-				movement_angle -= degree * bias;
-			}
+		float bias = 0;
+		if (direction == 1) {
+			if (abs(ball->get_velocity().y) > abs(ball->get_velocity().x) * 0.6f)
+				bias = 50;
+			else if (abs(ball->get_velocity().y) < abs(ball->get_velocity().x) * 0.6f && ball->get_velocity().x < 0)
+				bias = 50;
 		}
-		else if (movement_angle < angle_barrier) {
-			if (direction == -1) {
-				movement_angle += degree * bias;
-			}
-		}
-		else {
-			movement_angle += direction * degree * bias;
+		else if (direction == -1) {
+			if (abs(ball->get_velocity().y) > abs(ball->get_velocity().x) * 0.6f)
+				bias = -50;
+			else if (abs(ball->get_velocity().y) < abs(ball->get_velocity().x) * 0.6f && ball->get_velocity().x > 0)
+				bias = -50;
 		}
 
-		float length = Utils::length(ball->get_velocity());
-		Vect norm_velocity = Vect(cos(movement_angle), sin(movement_angle));
+		Vect new_velocity = Vect(ball->get_velocity().x + bias, ball->get_velocity().y);
+		float new_velocity_length = Utils::length(new_velocity);
+		new_velocity = new_velocity / new_velocity_length;
 
-		ball->set_velocity(Vect(norm_velocity.x * length, norm_velocity.y * length));
-
-		std::cout << std::endl;
-		std::cout << " x: " << ball->get_velocity().x << " y: " << ball->get_velocity().y << std::endl;
-		std::cout << std::endl;
-
+		ball->set_velocity(Vect(new_velocity.x * ball_speed, new_velocity.y * ball_speed));
 	}
 }
 
