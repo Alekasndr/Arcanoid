@@ -57,6 +57,8 @@ file(GLOB srcs
    "src/models/*.cpp"
    "src/controllers/*.h"
    "src/controllers/*.cpp"
+   "src/utils/*.h"
+   "src/utils/*.cpp"
 )
 
 find_package(OpenGL REQUIRED)

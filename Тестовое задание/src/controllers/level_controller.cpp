@@ -3,7 +3,8 @@
 #include "collision_handler.h"
 
 #include <iostream>
-#include "../utils.h"
+#include "../utils/utils.h"
+#include "../utils/record_serializator.h"
 
 LevelController::LevelController(const ArkanoidSettings& settings)
 {
@@ -11,7 +12,7 @@ LevelController::LevelController(const ArkanoidSettings& settings)
 	this->ball = std::make_shared<Ball>(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
 	this->carriage = std::make_shared<Carriage>(Vect(world.get()->get_world_size().x / 2.0f - (settings.carriage_width / 2.0f), settings.world_size.y - 20.0f), settings.carriage_width);
 	this->bricks = LevelGenerator::create_bricks_list(settings);
-	this->score = std::make_shared<Score>(1);
+	this->score = std::make_shared<Score>(RecordSerializator::deserializeInt(RecordSerializator::filename));
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelController::get_bricks()
@@ -40,7 +41,7 @@ void LevelController::reset(const ArkanoidSettings& settings)
 	this->ball.get()->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
 	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
 	bricks_reset(settings);
-	this->score.get()->reset(1);
+	this->score = std::make_shared<Score>(RecordSerializator::deserializeInt(RecordSerializator::filename));
 }
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
@@ -82,7 +83,7 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 			ball->set_position(Vect(ball->get_position() + current_direction * radius));
 		}
 
-		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen());
+		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(), this->score);
 
 		if (!Utils::is_pair_zero(pair)) {
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());

@@ -2,10 +2,11 @@
 
 #include <iostream>
 #include <cmath>
-#include "../utils.h"
+#include "../utils/utils.h"
+#include "../utils/record_serializator.h"
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
-	std::shared_ptr<World> world, Vect& world_to_screen)
+	std::shared_ptr<World> world, Vect& world_to_screen, std::shared_ptr<Score> score)
 {
 	std::pair<Vect, Vect> resault;
 
@@ -59,8 +60,21 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 	}
 	else if (ball_p->get_position().y > (demo_world_size.y - radius))
 	{
+		Score* score_p = score.get();
 		std::cout << std::endl;
 		std::cout << "You Lose!" << std::endl;
+		std::cout << "Your score: " << score_p->get_current_score() << std::endl;
+		if (score_p->get_current_score() > score_p->get_record_score()) {
+			std::cout << "Its a new record!" << std::endl;
+			std::cout << "Old record: " << score_p->get_record_score() << std::endl;
+			RecordSerializator::serializeInt(score_p->get_current_score(), RecordSerializator::filename);
+		}
+		else {
+			std::cout << "Record: " << score_p->get_record_score() << std::endl;
+		}
+		std::cout << "Please reset" << std::endl;
+		std::cout << std::endl;
+
 		ball_p->set_position(Vect(ball_p->get_position().x,
 			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));
 
