@@ -20,6 +20,7 @@ public:
 private:
 	void bricks_reset(const ArkanoidSettings& settings);
 	void add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen);
+	void ball_move_with_carriage();
 	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks;
 	std::shared_ptr<World> world;
 	std::shared_ptr<Carriage> carriage;

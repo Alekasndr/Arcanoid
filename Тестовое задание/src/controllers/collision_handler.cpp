@@ -106,7 +106,6 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Bal
 			}
 		}
 	}
-
 	return resault;
 }
 

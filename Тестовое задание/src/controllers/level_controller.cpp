@@ -72,16 +72,18 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 	float radius = ball->get_radius();
 
 	// Относительно примитивная реализация для фикса большой скорости при маленьком радиусе
-	// Для больших проектов в лучше использовать рейкаст
+	// Для больших проектов лучше использовать рейкаст
 	while (range > 0) {
 		Vect current_velocity = ball->get_velocity();
-		Vect current_direction = current_velocity / sqrt(current_velocity.x * current_velocity.x + current_velocity.y * current_velocity.y);
+		Vect current_direction = current_velocity / Utils::length(current_velocity);
+
 		if (range < radius) {
-			ball->set_position(Vect(ball->get_position() + current_direction * (radius - range)));
+			ball->set_position(Vect(ball->get_position() + current_direction * range));
 		}
 		else {
 			ball->set_position(Vect(ball->get_position() + current_direction * radius));
 		}
+		range -= radius;
 
 		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(), this->score);
 
@@ -92,6 +94,7 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 		pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
 
 		if (!Utils::is_pair_zero(pair)) {
+			ball_move_with_carriage();
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
 
@@ -103,8 +106,6 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 			std::cout << "Score: " << score_p->get_current_score() << std::endl;
 			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
 		}
-
-		range -= radius;
 	}
 }
 
@@ -118,11 +119,23 @@ void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& p
 
 void LevelController::move_carriage(ImGuiIO& io)
 {
-	int direction = InputController::get_direction(io);
-	Vect new_pos = Vect(carriage.get()->get_position().x + direction * carriage.get()->get_speed(),
-		carriage.get()->get_position().y);
+	Carriage* carrige_p = carriage.get();
+	carrige_p->set_direction(InputController::get_direction(io));
+	Vect new_pos = Vect(carrige_p->get_position().x + carrige_p->get_direction() * carrige_p->get_speed(),
+		carrige_p->get_position().y);
 
-	if (new_pos.x > 0 && new_pos.x + carriage.get()->get_width() < world.get()->get_world_size().x) {
-		carriage.get()->set_position(new_pos);
+	if (new_pos.x > 0 && new_pos.x + carrige_p->get_width() < world.get()->get_world_size().x) {
+		carrige_p->set_position(new_pos);
+	}
+}
+
+void LevelController::ball_move_with_carriage()
+{
+	int direction = carriage.get()->get_direction();
+	std::cout << direction << std::endl;
+	if (direction != 0) {
+		Ball* ball_p = ball.get();
+		ball_p->set_velocity(Vect(ball_p->get_velocity().x + direction * (ball_p->get_velocity().x / 3.0f),
+			ball_p->get_velocity().y));
 	}
 }

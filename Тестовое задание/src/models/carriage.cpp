@@ -41,6 +41,16 @@ void Carriage::set_speed(float speed)
 	this->speed = speed;
 }
 
+int Carriage::get_direction()
+{
+	return this->direction;
+}
+
+void Carriage::set_direction(int direction)
+{
+	this->direction = direction;
+}
+
 void Carriage::reset(Vect position, float width)
 {
 	this->position = position;
