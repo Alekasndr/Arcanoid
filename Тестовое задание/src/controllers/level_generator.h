@@ -8,7 +8,7 @@
 class LevelGenerator
 {
 public:
-	static std::shared_ptr<std::vector<std::shared_ptr<Brick>>> create_bricks_list(const ArkanoidSettings& settings);
-	static void reset_bricks_list(std::shared_ptr<std::vector<std::shared_ptr<Brick>>> briks, const ArkanoidSettings& settings);
+	static std::vector<Brick> create_bricks_list(const ArkanoidSettings& settings);
+	static void reset_bricks_list(std::vector<Brick>& briks, const ArkanoidSettings& settings);
 };
 

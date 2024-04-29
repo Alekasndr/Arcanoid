@@ -28,7 +28,6 @@ private:
 	Vect velocity = Vect(0.0f);
 
 	float radius = 10.0f;
-	float speed = 150.0f;
 
 	bool is_active = true;
 };

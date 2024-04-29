@@ -5,17 +5,19 @@
 #include <iostream>
 #include "../utils/utils.h"
 #include "../utils/record_serializator.h"
+#include <GLFW/glfw3.h>
 
 LevelController::LevelController(const ArkanoidSettings& settings)
 {
-	this->world = std::make_shared<World>(settings.world_size);
-	this->ball = std::make_shared<Ball>(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
-	this->carriage = std::make_shared<Carriage>(Vect(world.get()->get_world_size().x / 2.0f - (settings.carriage_width / 2.0f), settings.world_size.y - 20.0f), settings.carriage_width);
-	this->bricks = LevelGenerator::create_bricks_list(settings);
-	this->score = std::make_shared<Score>(RecordSerializator::deserializeInt(RecordSerializator::filename));
+	world = std::make_shared<World>(settings.world_size);
+	ball = std::make_shared<Ball>(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
+	carriage = std::make_shared<Carriage>(Vect(world.get()->get_world_size().x / 2.0f - (settings.carriage_width / 2.0f),
+		settings.world_size.y - 20.0f), settings.carriage_width);
+	bricks = LevelGenerator::create_bricks_list(settings);
+	score = std::make_shared<Score>(RecordSerializator::deserializeInt(RecordSerializator::filename));
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<Brick>>> LevelController::get_bricks()
+const std::vector<Brick>& LevelController::get_bricks() const
 {
 	return bricks;
 }
@@ -37,31 +39,31 @@ std::shared_ptr<World> LevelController::get_world()
 
 void LevelController::reset(const ArkanoidSettings& settings)
 {
-	this->world.get()->reset(settings.world_size);
-	this->ball.get()->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f), settings.ball_radius, settings.ball_speed);
-	this->carriage.get()->reset(Vect(world.get()->get_world_size().x / 2 - (settings.carriage_width / 2), settings.world_size.y - 20), settings.carriage_width);
+	world->reset(settings.world_size);
+	ball->reset(Vect(settings.world_size.x / 2.0f, settings.world_size.y / 2.0f),
+		settings.ball_radius, settings.ball_speed);
+	carriage->reset(Vect(world->get_world_size().x / 2 - (settings.carriage_width / 2),
+		settings.world_size.y - 20), settings.carriage_width);
 	bricks_reset(settings);
-	this->score = std::make_shared<Score>(RecordSerializator::deserializeInt(RecordSerializator::filename));
+	score->reset(RecordSerializator::deserializeInt(RecordSerializator::filename));
 }
 
 void LevelController::bricks_reset(const ArkanoidSettings& settings)
 {
-	// Тут работу с памятью еще лучше можно оптимизировать с помощью пула,
-	// но тербует дополнительных затрат времени и избыточно для данного задания
-	int size = bricks.get()->size();
+	//TODO: Тут работу с памятью еще лучше можно оптимизировать с помощью пула
+	int size = bricks.size();
 	int new_size = settings.bricks_columns_count * settings.bricks_rows_count;
 
 	if (size < new_size) {
 		for (int i = 0; i < new_size - size; i++) {
-			bricks.get()->push_back(std::make_shared<Brick>());
+			bricks.emplace_back();
 		}
 	}
 	else if (size > new_size) {
 		for (int i = 0; i < size - new_size; i++) {
-			bricks.get()->pop_back();
+			bricks.pop_back();
 		}
 	}
-
 	LevelGenerator::reset_bricks_list(bricks, settings);
 }
 
@@ -71,8 +73,8 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 	float range = Utils::length(passed_distance);
 	float radius = ball->get_radius();
 
-	// Относительно примитивная реализация для фикса большой скорости при маленьком радиусе
-	// Для больших проектов лучше использовать рейкаст
+	// Использовал алгоритм Ray Marching 
+	// Для больших проектов лучше использовать алгоритм основанный на капсулях
 	while (range > 0) {
 		Vect current_velocity = ball->get_velocity();
 		Vect current_direction = current_velocity / Utils::length(current_velocity);
@@ -85,27 +87,37 @@ void LevelController::update(ArkanoidDebugData& debug_data, float elapsed)
 		}
 		range -= radius;
 
-		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(this->ball, this->world, this->world.get()->get_world_to_screen(), this->score);
+		std::pair<Vect, Vect> pair = CollisionHandler::collision_with_world(ball, world, score);
 
 		if (!Utils::is_pair_zero(pair)) {
-			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+			add_debug_hit(debug_data, pair.first, pair.second, world->get_world_to_screen());
 		}
 
-		pair = CollisionHandler::collision_with_carriage(this->ball, this->carriage, this->world.get()->get_world_to_screen());
+		pair = CollisionHandler::collision_with_carriage(ball, carriage, world->get_world_to_screen());
 
 		if (!Utils::is_pair_zero(pair)) {
 			ball_move_with_carriage();
-			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+			add_debug_hit(debug_data, pair.first, pair.second, world->get_world_to_screen());
 		}
 
-		pair = CollisionHandler::collision_with_briks(this->ball, this->bricks, this->world.get()->get_world_to_screen());
+		pair = CollisionHandler::collision_with_briks(ball, bricks, world->get_world_to_screen());
 
 		if (!Utils::is_pair_zero(pair)) {
-			Score* score_p = score.get();
-			score_p->set_current_score(score_p->get_current_score() + 1);
-			std::cout << "Score: " << score_p->get_current_score() << std::endl;
-			add_debug_hit(debug_data, pair.first, pair.second, this->world.get()->get_world_to_screen());
+			score->set_current_score(score->get_current_score() + 1);
+			std::cout << "Score: " << score->get_current_score() << std::endl;
+			add_debug_hit(debug_data, pair.first, pair.second, world->get_world_to_screen());
 		}
+	}
+}
+
+void LevelController::ball_move_with_carriage()
+{
+	int direction = carriage->get_direction();
+	std::cout << direction << std::endl;
+	if (direction != 0) {
+
+		ball->set_velocity(Vect(ball->get_velocity().x + direction * (fabs(ball->get_velocity().x) / 3.0f),
+			ball->get_velocity().y));
 	}
 }
 
@@ -119,23 +131,18 @@ void LevelController::add_debug_hit(ArkanoidDebugData& debug_data, const Vect& p
 
 void LevelController::move_carriage(ImGuiIO& io)
 {
-	Carriage* carrige_p = carriage.get();
-	carrige_p->set_direction(InputController::get_direction(io));
-	Vect new_pos = Vect(carrige_p->get_position().x + carrige_p->get_direction() * carrige_p->get_speed(),
-		carrige_p->get_position().y);
-
-	if (new_pos.x > 0 && new_pos.x + carrige_p->get_width() < world.get()->get_world_size().x) {
-		carrige_p->set_position(new_pos);
+	if (io.KeysDown[GLFW_KEY_A])
+		carriage->set_direction(-1.0f);
+	else if (io.KeysDown[GLFW_KEY_D])
+		carriage->set_direction(1.0f);
+	else {
+		carriage->set_direction(0);
 	}
-}
 
-void LevelController::ball_move_with_carriage()
-{
-	int direction = carriage.get()->get_direction();
-	std::cout << direction << std::endl;
-	if (direction != 0) {
-		Ball* ball_p = ball.get();
-		ball_p->set_velocity(Vect(ball_p->get_velocity().x + direction * (ball_p->get_velocity().x / 3.0f),
-			ball_p->get_velocity().y));
+	Vect new_pos = Vect(carriage->get_position().x + carriage->get_direction() * carriage->get_speed(),
+		carriage->get_position().y);
+
+	if (new_pos.x > 0 && new_pos.x + carriage->get_width() < world->get_world_size().x) {
+		carriage->set_position(new_pos);
 	}
 }

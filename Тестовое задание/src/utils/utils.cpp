@@ -10,5 +10,5 @@ bool Utils::is_pair_zero(std::pair<Vect, Vect>& pair)
 
 float Utils::length(Vect vect)
 {
-	return sqrt(vect.x * vect.x + vect.y * vect.y);;
+	return sqrt(vect.x * vect.x + vect.y * vect.y);
 }

@@ -10,7 +10,7 @@ class LevelController
 {
 public:
 	LevelController(const ArkanoidSettings& settings);
-	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> get_bricks();
+	const std::vector<Brick>& get_bricks() const;
 	std::shared_ptr<Carriage> get_carriage();
 	std::shared_ptr<Ball> get_ball();
 	std::shared_ptr<World> get_world();
@@ -21,7 +21,7 @@ private:
 	void bricks_reset(const ArkanoidSettings& settings);
 	void add_debug_hit(ArkanoidDebugData& debug_data, const Vect& pos, const Vect& normal, Vect& world_to_screen);
 	void ball_move_with_carriage();
-	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks;
+	std::vector<Brick> bricks;
 	std::shared_ptr<World> world;
 	std::shared_ptr<Carriage> carriage;
 	std::shared_ptr<Ball> ball;

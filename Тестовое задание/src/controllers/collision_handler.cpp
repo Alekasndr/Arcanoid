@@ -6,82 +6,76 @@
 #include "../utils/record_serializator.h"
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Ball> ball,
-	std::shared_ptr<World> world, Vect& world_to_screen, std::shared_ptr<Score> score)
+	std::shared_ptr<World> world, std::shared_ptr<Score> score)
 {
 	std::pair<Vect, Vect> resault;
 
-	Vect demo_world_size = world.get()->get_world_size();
+	Vect demo_world_size = world->get_world_size();
 
-	Ball* ball_p = ball.get();
-	float radius = ball_p->get_radius();
+	float radius = ball->get_radius();
 
 	// Сохранил реализацию расчета коллизии с миром из примера
 	// Однако пофиксил использование magic number 2.0f
-	if (ball_p->get_position().x < radius)
+	if (ball->get_position().x < radius)
 	{
 		// Эта часть нарушает принцип единсвенной ответсвнности
-		// Но поскольку так было в примере решил ее оставил
-		ball_p->set_position(Vect(ball_p->get_position().x + (radius - ball_p->get_position().x),
-			ball_p->get_position().y));
+		// Но сделал по предоставленному примеру
+		ball->set_position(Vect(radius, ball->get_position().y));
 
-		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
+		ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 
-		resault.first = Vect(0, ball_p->get_position().y);
+		resault.first = Vect(0, ball->get_position().y);
 		resault.second = Vect(1, 0);
 
 		return resault;
 	}
 
-	else if (ball_p->get_position().x > (demo_world_size.x - radius))
+	else if (ball->get_position().x > (demo_world_size.x - radius))
 	{
-		ball_p->set_position(Vect(ball_p->get_position().x -
-			(ball_p->get_position().x - (demo_world_size.x - radius)),
-			ball_p->get_position().y));
+		ball->set_position(Vect(demo_world_size.x - radius,
+			ball->get_position().y));
 
-		ball_p->set_velocity(Vect(ball_p->get_velocity().x * -1.0f, ball_p->get_velocity().y));
+		ball->set_velocity(Vect(ball->get_velocity().x * -1.0f, ball->get_velocity().y));
 
-		resault.first = Vect(demo_world_size.x, ball_p->get_position().y);
+		resault.first = Vect(demo_world_size.x, ball->get_position().y);
 		resault.second = Vect(-1, 0);
 
 		return resault;
 	}
 
-	if (ball_p->get_position().y < radius)
+	if (ball->get_position().y < radius)
 	{
-		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y + (radius - ball_p->get_position().y)));
+		ball->set_position(Vect(ball->get_position().x, radius));
 
-		ball_p->set_velocity(Vect(ball_p->get_velocity().x, ball_p->get_velocity().y * -1.0f));
+		ball->set_velocity(Vect(ball->get_velocity().x, ball->get_velocity().y * -1.0f));
 
-		resault.first = Vect(ball_p->get_position().x, 0);
+		resault.first = Vect(ball->get_position().x, 0);
 		resault.second = Vect(0, 1);
 
 		return resault;
 	}
-	else if (ball_p->get_position().y > (demo_world_size.y - radius))
+	else if (ball->get_position().y > (demo_world_size.y - radius))
 	{
-		Score* score_p = score.get();
 		std::cout << std::endl;
 		std::cout << "You Lose!" << std::endl;
-		std::cout << "Your score: " << score_p->get_current_score() << std::endl;
-		if (score_p->get_current_score() > score_p->get_record_score()) {
+		std::cout << "Your score: " << score->get_current_score() << std::endl;
+		if (score->get_current_score() > score->get_record_score()) {
 			std::cout << "Its a new record!" << std::endl;
-			std::cout << "Old record: " << score_p->get_record_score() << std::endl;
-			RecordSerializator::serializeInt(score_p->get_current_score(), RecordSerializator::filename);
+			std::cout << "Old record: " << score->get_record_score() << std::endl;
+			RecordSerializator::serializeInt(score->get_current_score(), RecordSerializator::filename);
 		}
 		else {
-			std::cout << "Record: " << score_p->get_record_score() << std::endl;
+			std::cout << "Record: " << score->get_record_score() << std::endl;
 		}
 		std::cout << "Please reset" << std::endl;
 		std::cout << std::endl;
 
-		ball_p->set_position(Vect(ball_p->get_position().x,
-			ball_p->get_position().y - (ball_p->get_position().y - (demo_world_size.y - radius))));
+		ball->set_position(Vect(ball->get_position().x, demo_world_size.y - radius));
 
-		ball_p->set_velocity(Vect(0, 0));
-		ball_p->set_is_active(false);
+		ball->set_velocity(Vect(0, 0));
+		ball->set_is_active(false);
 
-		resault.first = Vect(ball_p->get_position().x, demo_world_size.y);
+		resault.first = Vect(ball->get_position().x, demo_world_size.y);
 		resault.second = Vect(0, -1);
 
 		return resault;
@@ -90,18 +84,17 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_world(std::shared_ptr<Bal
 }
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Ball> ball,
-	std::shared_ptr<std::vector<std::shared_ptr<Brick>>> bricks, Vect& world_to_screen)
+	std::vector<Brick>& bricks, Vect& world_to_screen)
 {
 	std::pair<Vect, Vect> resault = std::make_pair(Vect(0, 0), Vect(0, 0));
 
-	for (auto brick : *bricks.get())
+	for (auto& brick : bricks)
 	{
-		Brick* brick_p = brick.get();
-		if (brick_p->get_is_active()) {
-			resault = collision_with_rect(ball, brick_p->get_position(),
-				brick_p->get_height(), brick_p->get_width());
+		if (brick.get_is_active()) {
+			resault = collision_with_rect(ball, brick.get_position(),
+				brick.get_height(), brick.get_width());
 			if (!Utils::is_pair_zero(resault)) {
-				brick_p->set_is_active(false);
+				brick.set_is_active(false);
 				return resault;
 			}
 		}
@@ -112,16 +105,16 @@ std::pair<Vect, Vect> CollisionHandler::collision_with_briks(std::shared_ptr<Bal
 std::pair<Vect, Vect> CollisionHandler::collision_with_carriage(std::shared_ptr<Ball> ball,
 	std::shared_ptr<Carriage> carriage, Vect& world_to_screen)
 {
-	return collision_with_rect(ball, carriage.get()->get_position(),
-		carriage.get()->get_height(), carriage.get()->get_width());
+	return collision_with_rect(ball, carriage->get_position(),
+		carriage->get_height(), carriage->get_width());
 }
 
 std::pair<Vect, Vect> CollisionHandler::collision_with_rect(std::shared_ptr<Ball> ball, Vect& pos, float height, float width)
 {
 	std::pair<Vect, Vect> resault;
 
-	Vect ball_pos = ball.get()->get_position();
-	float radius = ball.get()->get_radius();
+	Vect ball_pos = ball->get_position();
+	float radius = ball->get_radius();
 
 	float closest_x = std::max(pos.x, std::min(ball_pos.x, pos.x + width));
 	float closest_y = std::max(pos.y, std::min(ball_pos.y, pos.y + height));
