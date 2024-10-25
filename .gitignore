@@ -11,4 +11,4 @@ CTestTestfile.cmake
 _deps
 Arcanoid/build
 Arcanoid/out
-/Arcanoid/.vs
+Arcanoid/.vs
